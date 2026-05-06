@@ -27,4 +27,8 @@ pip install -r "${ROOT_DIR}/xsam/requirements/xsam.txt"
 if [[ "${INSTALL_FLASH_ATTN}" == "1" ]]; then
   pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.3/flash_attn-2.7.3+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 fi
-pip install -e "${ROOT_DIR}/xsam"
+if [[ -f "${ROOT_DIR}/xsam/setup.py" || -f "${ROOT_DIR}/xsam/pyproject.toml" ]]; then
+  pip install -e "${ROOT_DIR}/xsam"
+else
+  echo "Skip editable install: ${ROOT_DIR}/xsam has no setup.py or pyproject.toml; run scripts set PYTHONPATH."
+fi
