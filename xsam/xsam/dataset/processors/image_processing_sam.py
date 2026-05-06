@@ -694,18 +694,22 @@ class SamImageProcessor(BaseImageProcessor):
                     "Invalid condition map type. Must be of type PIL.Image.Image, numpy.ndarray, "
                     "torch.Tensor, tf.Tensor or jax.ndarray."
                 )
-        validate_preprocess_arguments(
+        validation_kwargs = dict(
             do_rescale=do_rescale,
             rescale_factor=rescale_factor,
             do_normalize=do_normalize,
             image_mean=image_mean,
             image_std=image_std,
             do_pad=do_pad,
-            pad_size=pad_size,  # Here _preprocess needs do_pad and pad_size.
             do_resize=do_resize,
             size=size,
             resample=resample,
         )
+        if "pad_size" in validate_preprocess_arguments.__code__.co_varnames:
+            validation_kwargs["pad_size"] = pad_size
+        elif "size_divisibility" in validate_preprocess_arguments.__code__.co_varnames:
+            validation_kwargs["size_divisibility"] = 1
+        validate_preprocess_arguments(**validation_kwargs)
 
         images, original_sizes, scaled_sizes = zip(
             *(

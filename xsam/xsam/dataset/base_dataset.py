@@ -6,7 +6,6 @@ from mmengine.config import Config, ConfigDict
 from mmengine.utils.misc import get_object_from_string
 from PIL import Image
 from torch.utils.data import Dataset
-from xtuner.dataset.utils import expand2square
 from xtuner.registry import BUILDER, MAP_FUNC
 
 from xsam.utils.logging import print_log
@@ -26,6 +25,19 @@ TASK_MODALITY_LENGTH = {k: int(i * 512) for i, k in enumerate(DEFAULT_TASKS)}
 
 debug_mode = os.getenv("DEBUG_MODE", "false").lower() == "true"
 debug_iter = 200
+
+
+def expand2square(pil_img, background_color):
+    width, height = pil_img.size
+    if width == height:
+        return pil_img
+    if width > height:
+        result = Image.new(pil_img.mode, (width, width), background_color)
+        result.paste(pil_img, (0, (width - height) // 2))
+        return result
+    result = Image.new(pil_img.mode, (height, height), background_color)
+    result.paste(pil_img, ((height - width) // 2, 0))
+    return result
 
 
 class BaseDataset(Dataset):
